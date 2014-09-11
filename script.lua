@@ -22,33 +22,24 @@ do
     table.remove(page, 1)
 end
 
-local i = 1
-while string.find(page[i], "</div>") == nil
-do
-    i = i + 1
-end
-
-while page[i] ~= nil
-do
-    table.remove(page, i)
-end
-
 
 local trucks = {}
-local current_date = ""
-while page[1] ~= nil
+local currentTruckNumber = -1
+local currentDate = ""
+while page[1] ~= nil and string.find(page[1], "</div>") == nil
 do
     if string.find(page[1], "<p><strong>Thursday") ~= nil then
-        current_date = page[1]
-        current_date = string.gsub(current_date, "<p><strong>", "")
-        current_date = string.gsub(current_date, "</strong></p>", "")
-        trucks[current_date] = {}
+        currentTruckNumber = currentTruckNumber + 1
+        currentDate = page[1]
+        currentDate = string.gsub(currentDate, "<p><strong>", "")
+        currentDate = string.gsub(currentDate, "</strong></p>", "")
+        trucks["" .. currentTruckNumber] = {["date"]=currentDate, ["trucks"]={}}
     end
     if string.find(page[1], "<li>") ~= nil then
-        current_truck = string.gsub(page[1], "<li>", "")
-        current_truck = string.gsub(current_truck, "</li>", "")
-        current_truck = string.gsub(current_truck, "&nbsp;", ""):trim()
-        table.insert(trucks[current_date], current_truck)
+        currentTruck = string.gsub(page[1], "<li>", "")
+        currentTruck = string.gsub(currentTruck, "</li>", "")
+        currentTruck = string.gsub(currentTruck, "&nbsp;", ""):trim()
+        table.insert(trucks["" .. currentTruckNumber]["trucks"], currentTruck)
     end
     table.remove(page, 1)
 end
